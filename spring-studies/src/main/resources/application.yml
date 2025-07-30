@@ -1,3 +1,6 @@
 spring:
     application:
       name: spring-studies
+server:
+  servlet:
+    context-path: /
