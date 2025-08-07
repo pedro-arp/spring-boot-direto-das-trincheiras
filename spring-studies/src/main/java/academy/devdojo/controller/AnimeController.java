@@ -4,13 +4,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 @RestController
-@RequestMapping("greetings")
-public class HelloController {
-    @GetMapping(value = {"hi", "hi/"})
-    public String hi() {
-        return "OMAE WA MOU SHINDE IRU";
+@RequestMapping("v1/animes")
+
+public class AnimeController {
+
+    @GetMapping()
+    public List<String> listAll() {
+        return List.of("DBZ", "Naruto", "One Piece", "Yuyu Hakusho");
     }
-
-
 }
