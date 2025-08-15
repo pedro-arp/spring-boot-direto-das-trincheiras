@@ -4,7 +4,9 @@ import academy.devdojo.domain.Producer;
 import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,14 +37,17 @@ public class ProducerController {
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE,
-    headers = "x-api-key=123")
-    public Producer createProducer(@RequestBody Producer producer, @RequestHeader HttpHeaders headers) {
+    headers = "x-api-key")
+    public ResponseEntity<Producer> createProducer(@RequestBody Producer producer, @RequestHeader HttpHeaders headers) {
         log.info("headers '{}'", headers);
         var getProducers = Producer.getProducers();
 
         var lastId = getProducers.getLast().getId();
         producer.setId(lastId + 1);
         getProducers.add(producer);
-        return producer;
+
+        var responseHeaders = new HttpHeaders();
+        responseHeaders.add("Authorization", "My Key");
+        return ResponseEntity.status(HttpStatus.CREATED).headers(responseHeaders).body(producer);
     }
 }
