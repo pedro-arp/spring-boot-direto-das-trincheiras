@@ -12,21 +12,33 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class AnimeController {
     @GetMapping()
-    public List<String> listAll() throws InterruptedException {
+    public List<Anime> listAll() throws InterruptedException {
         log.info(Thread.currentThread().getName());
         TimeUnit.SECONDS.sleep(1);
-        return List.of("DBZ", "Naruto", "One Piece", "Yuyu Hakusho");
+        return Anime.getAnimes();
     }
 
     @GetMapping("filter")
     public List<Anime> filterByName(@RequestParam(required = false) String name) {
-        var animes = Anime.animeList();
-        if(animes == null) return animes;
+        var animes = Anime.getAnimes();
+        if (animes == null) return animes;
 
         return animes.stream().filter(a -> a.getName().equalsIgnoreCase(name)).toList();
     }
+
     @GetMapping("{id}")
     public Anime filterByName(@PathVariable Long id) {
-        return Anime.animeList().stream().filter(a -> a.getId().equals(id)).findFirst().orElse(null);
+        return Anime.getAnimes().stream().filter(a -> a.getId().equals(id)).findFirst().orElse(null);
+    }
+
+    @PostMapping
+    public Anime createAnime(@RequestBody Anime anime) {
+        log.info("Anime '{}'", anime.toString());
+        var getAnimes = Anime.getAnimes();
+
+        var lastId = getAnimes.getLast().getId();
+        anime.setId(lastId + 1);
+        getAnimes.add(anime);
+        return anime;
     }
 }
