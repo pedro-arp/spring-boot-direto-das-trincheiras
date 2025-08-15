@@ -40,11 +40,8 @@ public class ProducerController {
     headers = "x-api-key")
     public ResponseEntity<Producer> createProducer(@RequestBody Producer producer, @RequestHeader HttpHeaders headers) {
         log.info("headers '{}'", headers);
-        var getProducers = Producer.getProducers();
-
-        var lastId = getProducers.getLast().getId();
-        producer.setId(lastId + 1);
-        getProducers.add(producer);
+        producer.setId(Producer.getProducers().getLast().getId() + 1);
+        Producer.getProducers().add(producer);
 
         var responseHeaders = new HttpHeaders();
         responseHeaders.add("Authorization", "My Key");
