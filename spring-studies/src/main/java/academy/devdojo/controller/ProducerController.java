@@ -1,7 +1,8 @@
 package academy.devdojo.controller;
 
 import academy.devdojo.domain.Producer;
-import java.util.Collections;
+import academy.devdojo.request.ProducerPostRequest;
+import academy.devdojo.response.ProducerGetResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -37,14 +40,19 @@ public class ProducerController {
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE,
-    headers = "x-api-key")
-    public ResponseEntity<Producer> createProducer(@RequestBody Producer producer, @RequestHeader HttpHeaders headers) {
+            headers = "x-api-key")
+    public ResponseEntity<ProducerGetResponse> createProducer(@RequestBody ProducerPostRequest producerPostRequest, @RequestHeader HttpHeaders headers) {
         log.info("headers '{}'", headers);
-        producer.setId(Producer.getProducers().getLast().getId() + 1);
+
+        var producer = Producer.builder().id(Producer.getProducers().getLast().getId() + 1)
+                .name(producerPostRequest.getName())
+                .createdAt(LocalDateTime.now())
+                .build();
+
         Producer.getProducers().add(producer);
 
-        var responseHeaders = new HttpHeaders();
-        responseHeaders.add("Authorization", "My Key");
-        return ResponseEntity.status(HttpStatus.CREATED).headers(responseHeaders).body(producer);
+        var response = ProducerGetResponse.builder().id(producer.getId()).name(producer.getName()).createdAt(producer.getCreatedAt()).build();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
