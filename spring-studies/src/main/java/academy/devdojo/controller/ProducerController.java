@@ -1,6 +1,7 @@
 package academy.devdojo.controller;
 
 import academy.devdojo.domain.Producer;
+import academy.devdojo.mapper.ProducerMapper;
 import academy.devdojo.request.ProducerPostRequest;
 import academy.devdojo.response.ProducerGetResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -19,6 +19,9 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("v1/producers")
 @Slf4j
 public class ProducerController {
+
+    private static final ProducerMapper MAPPER = ProducerMapper.INSTANCE;
+
     @GetMapping()
     public List<Producer> listAll() throws InterruptedException {
         log.info(Thread.currentThread().getName());
@@ -44,15 +47,10 @@ public class ProducerController {
     public ResponseEntity<ProducerGetResponse> createProducer(@RequestBody ProducerPostRequest producerPostRequest, @RequestHeader HttpHeaders headers) {
         log.info("headers '{}'", headers);
 
-        var producer = Producer.builder().id(Producer.getProducers().getLast().getId() + 1)
-                .name(producerPostRequest.getName())
-                .createdAt(LocalDateTime.now())
-                .build();
-
+        Producer producer = MAPPER.toProducer(producerPostRequest);
+        ProducerGetResponse producerGetResponse = MAPPER.toProducerGetResponse(producer);
         Producer.getProducers().add(producer);
 
-        var response = ProducerGetResponse.builder().id(producer.getId()).name(producer.getName()).createdAt(producer.getCreatedAt()).build();
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(producerGetResponse);
     }
 }
