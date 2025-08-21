@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,14 +14,15 @@ import java.util.List;
 public class Anime {
     private Long id;
     private String name;
+    private LocalDateTime createdAt;
     @Getter
     private static List<Anime> animes = new ArrayList<>();
 
     static {
-        Anime anime1 = new Anime(1L, "DBZ");
-        Anime anime2 = new Anime(2L, "Naruto");
-        Anime anime3 = new Anime(3L, "Death Note");
-        Anime anime4 = new Anime(4L, "Yuyu Hakusho");
+        Anime anime1 = Anime.builder().id(1L).name("DBZ").createdAt(LocalDateTime.now()).build();
+        Anime anime2 = Anime.builder().id(2L).name("Naruto").createdAt(LocalDateTime.now()).build();
+        Anime anime3 = Anime.builder().id(3L).name("Death Note").createdAt(LocalDateTime.now()).build();
+        Anime anime4 = Anime.builder().id(4L).name("Yuyu Hakusho").createdAt(LocalDateTime.now()).build();
         animes.addAll(List.of(anime1, anime2, anime3, anime4));
     }
 

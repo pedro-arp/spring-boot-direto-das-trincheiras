@@ -2,8 +2,8 @@ package academy.devdojo.controller;
 
 import academy.devdojo.domain.Producer;
 import academy.devdojo.mapper.ProducerMapper;
-import academy.devdojo.request.ProducerPostRequest;
-import academy.devdojo.response.ProducerGetResponse;
+import academy.devdojo.request.producer.ProducerPostRequest;
+import academy.devdojo.response.producer.ProducerGetResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
