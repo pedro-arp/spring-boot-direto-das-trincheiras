@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -46,5 +47,16 @@ public class AnimeController {
         ANIME_LIST.add(anime);
         var response = MAPPER.toAnimePostResponse(anime);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deleteAnime(@PathVariable Long id) {
+        log.debug("Delete anime '{}'", id);
+        var anime = ANIME_LIST.stream()
+                .filter(a -> a.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Anime Not Found"));
+        ANIME_LIST.remove(anime);
+        return ResponseEntity.noContent().build();
+
     }
 }

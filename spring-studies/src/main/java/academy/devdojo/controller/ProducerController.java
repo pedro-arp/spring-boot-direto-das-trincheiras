@@ -59,12 +59,12 @@ public class ProducerController {
     @DeleteMapping("{id}")
     public ResponseEntity<Void> deleteProducer(@PathVariable Long id) {
         log.debug("Deleting producer '{}'", id);
-        var producerGetResponse = Producer.getProducers()
+        var producer = Producer.getProducers()
                 .stream()
                 .filter(a -> a.getId().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producer Not Found"));
-        Producer.getProducers().remove(producerGetResponse);
+        Producer.getProducers().remove(producer);
         return ResponseEntity.noContent().build();
 
     }
