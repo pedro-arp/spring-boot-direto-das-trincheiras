@@ -4,6 +4,7 @@ import academy.devdojo.domain.Producer;
 import academy.devdojo.mapper.ProducerMapper;
 import academy.devdojo.request.producer.ProducerPostRequest;
 import academy.devdojo.response.producer.ProducerGetResponse;
+import academy.devdojo.response.producer.ProducerPostResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("v1/producers")
@@ -23,34 +23,35 @@ public class ProducerController {
     private static final ProducerMapper MAPPER = ProducerMapper.INSTANCE;
 
     @GetMapping()
-    public List<Producer> listAll() throws InterruptedException {
-        log.info(Thread.currentThread().getName());
-        TimeUnit.SECONDS.sleep(1);
-        return Producer.getProducers();
+    public ResponseEntity<List<ProducerGetResponse>> listAll() {
+        var producerGetResponseList = MAPPER.toProducerGetResponseList(Producer.getProducers());
+        return ResponseEntity.ok(producerGetResponseList);
     }
 
     @GetMapping("filter")
-    public List<Producer> filterByName(@RequestParam(required = false) String name) {
+    public ResponseEntity<List<Producer>> filterByName(@RequestParam(required = false) String name) {
         var producers = Producer.getProducers();
-        if (producers == null) return Collections.emptyList();
+        if (producers == null) return ResponseEntity.ok(Collections.emptyList());
 
-        return producers.stream().filter(a -> a.getName().equalsIgnoreCase(name)).toList();
+        var listProducer = producers.stream().filter(a -> a.getName().equalsIgnoreCase(name)).toList();
+        MAPPER.toProducerGetResponseList(listProducer);
+        return ResponseEntity.ok(listProducer);
     }
 
     @GetMapping("{id}")
-    public Producer filterByName(@PathVariable Long id) {
-        return Producer.getProducers().stream().filter(a -> a.getId().equals(id)).findFirst().orElse(null);
+    public ResponseEntity<ProducerGetResponse> filterByName(@PathVariable Long id) {
+        var producerGetResponse = Producer.getProducers().stream().filter(a -> a.getId().equals(id)).findFirst().map(MAPPER::toProducerGetResponse).orElse(null);
+        return ResponseEntity.ok(producerGetResponse);
     }
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE,
-            headers = "x-api-key")
-    public ResponseEntity<ProducerGetResponse> createProducer(@RequestBody ProducerPostRequest producerPostRequest, @RequestHeader HttpHeaders headers) {
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, headers = "x-api-key")
+    public ResponseEntity<ProducerPostResponse> createProducer(@RequestBody ProducerPostRequest producerPostRequest, @RequestHeader HttpHeaders headers) {
         log.info("headers '{}'", headers);
 
         Producer producer = MAPPER.toProducer(producerPostRequest);
-        ProducerGetResponse producerGetResponse = MAPPER.toProducerGetResponse(producer);
+        var producerPostResponse = MAPPER.toProducerPostResponse(producer);
         Producer.getProducers().add(producer);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(producerGetResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(producerPostResponse);
     }
 }
