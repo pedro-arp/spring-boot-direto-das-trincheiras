@@ -3,6 +3,7 @@ package academy.devdojo.controller;
 import academy.devdojo.domain.Anime;
 import academy.devdojo.mapper.AnimeMapper;
 import academy.devdojo.request.anime.AnimePostRequest;
+import academy.devdojo.request.anime.AnimePutRequest;
 import academy.devdojo.response.anime.AnimeGetResponse;
 import academy.devdojo.response.anime.AnimePostResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -41,9 +42,9 @@ public class AnimeController {
     }
 
     @PostMapping
-    public ResponseEntity<AnimePostResponse> createAnime(@RequestBody AnimePostRequest animePostRequest) {
-        log.info("Anime '{}'", animePostRequest.toString());
-        var anime = MAPPER.toAnime(animePostRequest);
+    public ResponseEntity<AnimePostResponse> createAnime(@RequestBody AnimePostRequest request) {
+        log.info("Anime '{}'", request.toString());
+        var anime = MAPPER.toAnime(request);
         ANIME_LIST.add(anime);
         var response = MAPPER.toAnimePostResponse(anime);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -56,6 +57,25 @@ public class AnimeController {
                 .findFirst()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Anime Not Found"));
         ANIME_LIST.remove(anime);
+        return ResponseEntity.noContent().build();
+
+    }
+
+    @PutMapping
+    public ResponseEntity<Void> update(@RequestBody AnimePutRequest request) {
+        log.debug("Request To Update ANime '{}'", request);
+
+        var animeToRemove = ANIME_LIST.stream()
+                .filter(a -> a.getId().equals(request.getId()))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Anime Not Found"));
+
+       var animeUpdated =  MAPPER.toAnime(request);
+
+        ANIME_LIST.remove(animeToRemove);
+
+        ANIME_LIST.add(animeUpdated);
+
         return ResponseEntity.noContent().build();
 
     }
