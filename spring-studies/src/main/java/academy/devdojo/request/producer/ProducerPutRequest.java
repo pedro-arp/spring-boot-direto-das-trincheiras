@@ -1,4 +1,4 @@
-package academy.devdojo.request.anime;
+package academy.devdojo.request.producer;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.ToString;
 @Getter
 @Builder
 @ToString
-public class AnimePutRequest {
+public class ProducerPutRequest {
     private Long id;
     private String name;
 }
