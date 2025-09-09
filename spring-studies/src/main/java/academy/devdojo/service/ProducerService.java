@@ -12,9 +12,10 @@ public class ProducerService {
 
     public ProducerService() {
         this.repository = new ProducerHardCodedRepository();
+
     }
 
-    public List<Producer> findALl(String name) {
+    public List<Producer> findAll(String name) {
         return name == null ? repository.findAll() : repository.findByName(name);
     }
 
@@ -31,6 +32,6 @@ public class ProducerService {
     public void update(Producer producerToUpdate) {
         var producer = findByIdOrThrowNotFound(producerToUpdate.getId());
          producerToUpdate.setCreatedAt(producer.getCreatedAt());
-         repository.update(producer);
+         repository.update(producerToUpdate);
     }
 }

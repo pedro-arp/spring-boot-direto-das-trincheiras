@@ -25,7 +25,7 @@ public class ProducerHardCodedRepository {
         return PRODUCERS;
     }
 
-    public static Optional<Producer> findById(Long id) {
+    public  Optional<Producer> findById(Long id) {
         return PRODUCERS.stream().filter(a -> a.getId().equals(id)).findFirst();
     }
 
